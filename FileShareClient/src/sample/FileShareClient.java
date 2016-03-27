@@ -1,5 +1,8 @@
 package sample;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -40,17 +43,62 @@ public class FileShareClient extends Frame {
         // Close socket
         try {
             socket.close();
+            System.out.println("Socket closed successfully!");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void Dir() {
+    public void Dir(ObservableList<String> serverFiles) {
+        networkOut.println("DIR");
+        String buffer = null;
+        String[] filenames = null;
 
+        try {
+            buffer = networkIn.readLine();
+            System.out.println("buffer: " + buffer);
+            filenames = buffer.split("\\s+");
+        } catch (IOException e) {
+            System.err.println("Error reading from socket.");
+        }
+
+        serverFiles.clear();
+        for (String s : filenames) {
+            serverFiles.add(s);
+        }
+
+        CloseSocket();
     }
 
     public void Upload(String filename, String message) {
         networkOut.println("UL " + filename + " " + message);
+        CloseSocket();
+    }
+
+    public void Download(String path, String filename) {
+        networkOut.println("DL " + filename);
+        String buffer = "";
+
+        File sharedFolder = new File(path);
+
+        try {
+            String line = null;
+            while ((line = networkIn.readLine()) != null) {
+                buffer += line + "%n";
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from socket.");
+        }
+
+        try {
+            PrintWriter writer = new PrintWriter(path + "/" + filename, "UTF-8");
+            writer.printf(buffer);
+            writer.close();
+            System.out.println(filename + " has been downloaded to local folder!");
+        } catch (IOException e) {
+            System.err.println("Error writing to file.");
+        }
+
         CloseSocket();
     }
 }

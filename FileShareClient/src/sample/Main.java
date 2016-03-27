@@ -25,36 +25,19 @@ import java.util.Scanner;
 public class Main extends Application {
 
     private ListView<FileData> localList = new ListView<>();
-    private ListView<FileData> serverList = new ListView<>();
+    private ListView<String> serverList = new ListView<>();
 
     private FileData localSelected = null;
-    private FileData serverSelected = null;
+    private String serverSelected = null;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Group root = new Group();
 
-        // Buttons
-        Button dirButton = new Button("Dir");
-        dirButton.setMinWidth(100);
-
-        Button downloadButton = new Button("Download");
-        downloadButton.setMinWidth(100);
-
-        Button uploadButton = new Button("Upload");
-        uploadButton.setMinWidth(100);
-        uploadButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                System.out.println("Uploading " + localSelected.getFilename() + "...");
-                FileShareClient fsc = new FileShareClient();
-                fsc.Upload(localSelected.getFilename(), localSelected.getData());
-                System.out.println("Uploaded successfully to " + fsc.SERVER_ADDRESS + ":" + fsc.SERVER_PORT);
-            }
-        });
-
         // Local folder
         File localFolder = new File("shared");
+        localFolder.mkdirs();
+
         ObservableList<FileData> files = FXCollections.observableArrayList();
         for (File file : localFolder.listFiles()) {
             // Read the input to data
@@ -101,11 +84,36 @@ public class Main extends Application {
 
 
         // Server folder
-        serverList.setItems(files);
+        // Call dir on startup to get all the files in the server shared folder
+        FileShareClient fsc = new FileShareClient();
+        ObservableList<String> serverFiles = FXCollections.observableArrayList();
+        fsc.Dir(serverFiles);
+
+        serverList.setItems(serverFiles);
         serverList.setEditable(true);
         serverList.setMinWidth(200);
         serverList.setMinHeight(500);
-        //serverList.setCellFactory(TextFieldListCell.forListView());
+
+        // Buttons
+        Button dirButton = new Button("Dir");
+        dirButton.setMinWidth(100);
+
+        Button downloadButton = new Button("Download");
+        downloadButton.setMinWidth(100);
+
+        Button uploadButton = new Button("Upload");
+        uploadButton.setMinWidth(100);
+        uploadButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                System.out.println("Uploading " + localSelected.getFilename() + "...");
+                FileShareClient fsc = new FileShareClient();
+                fsc.Upload(localSelected.getFilename(), localSelected.getData());
+                fsc = new FileShareClient();
+                fsc.Dir(serverFiles);
+                System.out.println("Uploaded successfully to " + fsc.SERVER_ADDRESS + ":" + fsc.SERVER_PORT);
+            }
+        });
 
         // Layout
         HBox buttonsHBox = new HBox();
@@ -121,9 +129,7 @@ public class Main extends Application {
                 Insets(10, 0, 0, 0)
 
         );
-        listHBox.getChildren().
-
-                addAll(localList, serverList);
+        listHBox.getChildren().addAll(localList, serverList);
 
         VBox vBox = new VBox();
         vBox.setSpacing(0);

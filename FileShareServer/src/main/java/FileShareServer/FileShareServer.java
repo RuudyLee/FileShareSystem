@@ -12,7 +12,6 @@ public class FileShareServer {
     protected ServerSocket serverSocket = null;
     protected FileShareServerThread[] threads = null;
     protected int numClients = 0;
-    protected Vector messages = new Vector();
 
     public static int SERVER_PORT = 8888;
     public static int MAX_CLIENTS = 25;
@@ -26,10 +25,10 @@ public class FileShareServer {
             System.out.println("Server Socket created");
             threads = new FileShareServerThread[MAX_CLIENTS];
             while (true) {
-					 System.out.println("Awaiting connection...");
+                System.out.println("Awaiting connection...");
                 clientSocket = serverSocket.accept();
                 System.out.println("Client #" + (numClients + 1) + " connected.");
-                threads[numClients] = new FileShareServerThread(sharedFolder, clientSocket, messages);
+                threads[numClients] = new FileShareServerThread(sharedFolder, clientSocket);
                 threads[numClients].start();
                 numClients++;
             }
