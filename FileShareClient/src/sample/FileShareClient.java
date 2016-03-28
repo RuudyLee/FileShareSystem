@@ -56,12 +56,12 @@ public class FileShareClient extends Frame {
 
         try {
             buffer = networkIn.readLine();
-            System.out.println("buffer: " + buffer);
             filenames = buffer.split("\\s+");
         } catch (IOException e) {
             System.err.println("Error reading from socket.");
         }
 
+        // Re-populate the list of filenames on server
         serverFiles.clear();
         for (String s : filenames) {
             serverFiles.add(s);
@@ -70,15 +70,28 @@ public class FileShareClient extends Frame {
         CloseSocket();
     }
 
-    public void Upload(String filename, String message) {
-        networkOut.println("UL " + filename + " " + message);
+    public void Upload(String path, String filename) {
+        String data = "";
+
+        try {
+            FileReader fileReader = new FileReader(new File(path + "/" + filename));
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            String currentLine;
+            while ((currentLine = bufferedReader.readLine()) != null) {
+                data += currentLine + "%n";
+            }
+        } catch (IOException e) {
+            System.err.println("IOException while opening a read connection");
+        }
+
+        networkOut.println("UL " + filename + " " + data);
         CloseSocket();
     }
 
     public void Download(String path, String filename) {
         networkOut.println("DL " + filename);
         String buffer = "";
-
         File sharedFolder = new File(path);
 
         try {

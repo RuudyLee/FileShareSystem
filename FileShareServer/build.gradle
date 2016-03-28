@@ -1,16 +1,7 @@
 apply plugin: 'java'
-apply plugin: 'application'
-
-mainClassName = 'FileShareServer.FileShareServer'
 
 repositories {
 	mavenCentral()
-}
-
-jar {
-	manifest {
-		attributes 'Main-Class': 'FileShareServer.FileShareServer'
-	}
 }
 
 task (runServer, dependsOn: 'classes', type:JavaExec) {

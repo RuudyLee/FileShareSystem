@@ -64,7 +64,6 @@ public class FileShareServerThread extends Thread {
     }
 
     protected boolean processCommand(String command, String data) {
-        System.out.println("command: " + command);
         try {
             if (command.equalsIgnoreCase("UL")) { // upload
                 // Download the received data to shared folder
@@ -72,7 +71,7 @@ public class FileShareServerThread extends Thread {
                 PrintWriter writer = new PrintWriter(folder.getAbsolutePath() + "/" + filename, "UTF-8");
                 writer.printf(data.substring(data.indexOf(" ") + 1, data.length()));
                 writer.close();
-                System.out.println(filename + " has been written to!");
+                System.out.println(filename + " has been uploaded to the server!");
                 return true;
             } else if (command.equalsIgnoreCase("DL")) { // download
                 // Output the contents of the desired file
@@ -84,6 +83,7 @@ public class FileShareServerThread extends Thread {
                 while ((line = bufferedReader.readLine()) != null) {
                     message += line + "%n";
                 }
+                System.out.println("Request to download " + filename + " has been accepted!");
                 out.println(message);
                 return true;
             } else if (command.equalsIgnoreCase("DIR")) { // dir
@@ -93,10 +93,8 @@ public class FileShareServerThread extends Thread {
                     message += file.getName() + " ";
                 }
 
-
                 // get rid of the last space
                 message = message.trim();
-                System.out.println(message);
                 out.println(message);
             }
         } catch (IOException e) {
