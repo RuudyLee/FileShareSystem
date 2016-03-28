@@ -38,7 +38,6 @@ public class Main extends Application {
 
         // Local folder
         refreshLocalList();
-
         localList.setItems(localFiles);
         localList.setEditable(true);
         localList.setMinWidth(200);
@@ -50,12 +49,10 @@ public class Main extends Application {
             }
         });
 
-
         // Server folder
         // Call dir on startup to get all the files in the server shared folder
         FileShareClient fsc = new FileShareClient();
         fsc.Dir(serverFiles);
-
         serverList.setItems(serverFiles);
         serverList.setEditable(true);
         serverList.setMinWidth(200);
@@ -73,59 +70,48 @@ public class Main extends Application {
         downloadButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                System.out.println("Downloading " + serverSelected + "...");
-                FileShareClient fsc = new FileShareClient();
-                fsc.Download(localFolder.getAbsolutePath(), serverSelected);
-                System.out.println("Uploaded successfully to " + fsc.SERVER_ADDRESS + ":" + fsc.SERVER_PORT);
-                refreshLocalList();
+                if (serverSelected != null) {
+                    System.out.println("Downloading " + serverSelected + "...");
+                    FileShareClient fsc = new FileShareClient();
+                    fsc.Download(localFolder.getAbsolutePath(), serverSelected);
+                    refreshLocalList();
+                }
             }
         });
+
         Button uploadButton = new Button("Upload");
         uploadButton.setMinWidth(100);
         uploadButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                System.out.println("Uploading " + localSelected + "...");
-                FileShareClient fsc = new FileShareClient();
-                fsc.Upload(localFolder.getAbsolutePath(), localSelected);
-                fsc = new FileShareClient();
-                System.out.println("Uploaded successfully to " + fsc.SERVER_ADDRESS + ":" + fsc.SERVER_PORT);
-                fsc.Dir(serverFiles);
+                if (localSelected != null) {
+                    System.out.println("Uploading " + localSelected + "...");
+                    FileShareClient fsc = new FileShareClient();
+                    fsc.Upload(localFolder.getAbsolutePath(), localSelected);
+                    fsc = new FileShareClient();
+
+                    fsc.Dir(serverFiles);
+                }
             }
         });
 
         // Layout
         HBox buttonsHBox = new HBox();
         buttonsHBox.setSpacing(0);
-        buttonsHBox.getChildren().
-
-                addAll(downloadButton, uploadButton);
+        buttonsHBox.getChildren().addAll(downloadButton, uploadButton);
 
         HBox listHBox = new HBox();
         listHBox.setSpacing(5);
-        listHBox.setPadding(new
-
-                Insets(10, 0, 0, 0)
-
-        );
+        listHBox.setPadding(new Insets(10, 0, 0, 0));
         listHBox.getChildren().addAll(localList, serverList);
 
         VBox vBox = new VBox();
         vBox.setSpacing(0);
-        vBox.getChildren().
+        vBox.getChildren().addAll(buttonsHBox, listHBox);
 
-                addAll(buttonsHBox, listHBox);
-
-        root.getChildren().
-
-                addAll(vBox);
-
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new
-
-                Scene(root, 500, 600)
-
-        );
+        root.getChildren().addAll(vBox);
+        primaryStage.setTitle("File Share Client. By Rudy Lee");
+        primaryStage.setScene(new Scene(root, 500, 600));
         primaryStage.show();
     }
 
