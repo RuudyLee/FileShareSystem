@@ -17,6 +17,7 @@ public class FileShareServer {
     public static int MAX_CLIENTS = 25;
 
     public FileShareServer() {
+        System.out.println("File Share Server! By Rudy Lee");
         sharedFolder = new File("shared");
         sharedFolder.mkdirs();
 
