@@ -4,7 +4,7 @@ repositories {
 	mavenCentral()
 }
 
-task (runServer, dependsOn: 'classes', type:JavaExec) {
+task (run, dependsOn: 'classes', type:JavaExec) {
 	main = 'FileShareServer.FileShareServer'
 	classpath = sourceSets.main.runtimeClasspath
 }
